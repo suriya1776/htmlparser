@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	a, err := htmlparser.Parse("testfiles")
+	a, err := htmlparser.Parse("testfiles/response.html")
 
 	if err != nil {
 		fmt.Printf("error exist: %v\n", err)
