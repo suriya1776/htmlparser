@@ -23,11 +23,5 @@ func fCheck(filelocation string) error {
 		return fmt.Errorf("invalid file type expected html file")
 	}
 
-	file, err := os.Open(filelocation)
-	if err != nil {
-		return fmt.Errorf("file cannnot be opened : %v", err)
-	}
-
-	defer file.Close()
 	return nil
 }

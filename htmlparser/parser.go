@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 func Test() {
@@ -32,10 +33,13 @@ func parse(filelocation string) (string, error) {
 	}
 	defer file.Close()
 
-	body, err := io.ReadAll(file)
+	content, err := io.ReadAll(file)
 	if err != nil {
 		return "", fmt.Errorf("unable to read file: %v", err)
 	}
 
-	return string(body), nil
+	// Remove all spaces, tabs, and newlines from the string
+	processedContent := strings.Join(strings.Fields(string(content)), "")
+
+	return processedContent, nil
 }
