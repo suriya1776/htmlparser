@@ -1,0 +1,105 @@
+{
+    "html": {
+      "attributes": ["lang", "dir"],
+      "children": {
+        "head": {
+          "attributes": [],
+          "children": {
+            "title": {
+              "attributes": [],
+              "children": null
+            },
+            "meta": {
+              "attributes": ["charset", "name", "content", "http-equiv"],
+              "children": null
+            },
+            "link": {
+              "attributes": ["rel", "href", "type", "media", "sizes"],
+              "children": null
+            },
+            "style": {
+              "attributes": ["type", "media", "scoped"],
+              "children": null
+            },
+            "script": {
+              "attributes": ["src", "type", "async", "defer", "crossorigin", "integrity"],
+              "children": null
+            },
+            "base": {
+              "attributes": ["href", "target"],
+              "children": null
+            },
+            "noscript": {
+              "attributes": [],
+              "children": null
+            }
+          }
+        },
+        "body": {
+          "attributes": ["class", "id", "style"],
+          "children": {
+            "div": {
+              "attributes": ["class", "id", "style"],
+              "children": null
+            },
+            "p": {
+              "attributes": ["class", "id", "style"],
+              "children": null
+            },
+            "a": {
+              "attributes": ["href", "target", "rel", "download"],
+              "children": null
+            },
+            "img": {
+              "attributes": ["src", "alt", "width", "height", "loading", "crossorigin"],
+              "children": null
+            },
+            "span": {
+              "attributes": ["class", "id", "style"],
+              "children": null
+            },
+            "ul": {
+              "attributes": ["class", "id", "style"],
+              "children": {
+                "li": {
+                  "attributes": ["class", "id", "style"],
+                  "children": null
+                }
+              }
+            },
+            "ol": {
+              "attributes": ["class", "id", "style"],
+              "children": {
+                "li": {
+                  "attributes": ["class", "id", "style"],
+                  "children": null
+                }
+              }
+            },
+            "script": {
+              "attributes": ["src", "type", "async", "defer", "crossorigin", "integrity"],
+              "children": null
+            },
+            "iframe": {
+              "attributes": ["src", "width", "height", "frameborder", "allow", "allowfullscreen"],
+              "children": null
+            },
+            "form": {
+              "attributes": ["action", "method", "enctype", "target"],
+              "children": {
+                "input": {
+                  "attributes": ["type", "name", "value", "placeholder", "required"],
+                  "children": null
+                },
+                "button": {
+                  "attributes": ["type", "name", "value", "class", "id", "style"],
+                  "children": null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

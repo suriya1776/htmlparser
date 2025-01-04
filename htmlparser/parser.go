@@ -41,5 +41,10 @@ func parse(filelocation string) (string, error) {
 	// Remove all spaces, tabs, and newlines from the string
 	processedContent := strings.Join(strings.Fields(string(content)), "")
 
+	// Validate the HTML structure
+	if err := validateHTML(processedContent); err != nil {
+		return "", fmt.Errorf("invalid HTML: %v", err)
+	}
+
 	return processedContent, nil
 }
