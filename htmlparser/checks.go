@@ -3,7 +3,6 @@ package htmlparser
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 )
 
@@ -27,44 +26,58 @@ func fCheck(filelocation string) error {
 	return nil
 }
 
-func validateHTML(htmlContent string) error {
-	// Regex to match opening, closing, and self-closing HTML tags
-	tagRegex := regexp.MustCompile(`</?([a-zA-Z0-9]+)(\s+[^>]*)?>`)
+// validateHTML checks for unclosed or mismatched tags
+func validateHTML(content string) error {
+	stack := []string{} // To track open tags
 
-	// Regex to match <script> tags (to ignore their content)
-	scriptRegex := regexp.MustCompile(`(?i)<script[^>]*>.*?</script>`)
-
-	// Remove <script> content from validation
-	htmlWithoutScripts := scriptRegex.ReplaceAllString(htmlContent, "")
-
-	// Find all tags in the remaining content
-	matches := tagRegex.FindAllStringSubmatch(htmlWithoutScripts, -1)
-
-	var stack []string
-	for _, match := range matches {
-		tag := strings.ToLower(match[1]) // Convert tag name to lowercase for case-insensitive matching
-		fullTag := match[0]
-
-		// Skip self-closing tags
-		if strings.HasSuffix(fullTag, "/>") {
-			continue
-		}
-
-		if strings.HasPrefix(fullTag, "</") {
-			// Closing tag: check if it matches the top of the stack
-			if len(stack) == 0 || stack[len(stack)-1] != tag {
-				return fmt.Errorf("unmatched closing tag: </%s>", tag)
+	for len(content) > 0 {
+		// Check for opening or closing tags
+		if strings.HasPrefix(content, "<") {
+			// Find the next '>' to close the tag
+			closeIdx := strings.Index(content, ">")
+			if closeIdx == -1 {
+				return fmt.Errorf("malformed tag: no closing '>' found")
 			}
-			stack = stack[:len(stack)-1] // Pop the matched tag
+
+			tag := content[1:closeIdx]
+			content = content[closeIdx+1:]
+
+			// Check for closing tags
+			if strings.HasPrefix(tag, "/") {
+				tagName := tag[1:]
+				if len(stack) == 0 || stack[len(stack)-1] != tagName {
+					return fmt.Errorf("mismatched closing tag: </%s>", tagName)
+				}
+				// Pop the matching opening tag
+				stack = stack[:len(stack)-1]
+			} else {
+				// Handle self-closing tags like <img/>
+				if strings.HasSuffix(tag, "/") {
+					continue
+				}
+
+				// Extract attributes (if any) and strip them for validation
+				spaceIdx := strings.IndexAny(tag, " \t")
+				if spaceIdx != -1 {
+					tag = tag[:spaceIdx] // Keep only the tag name
+				}
+
+				// Push the tag onto the stack
+				stack = append(stack, tag)
+			}
 		} else {
-			// Opening tag: push onto the stack
-			stack = append(stack, tag)
+			// Move to the next tag (skip plain text)
+			nextTagIdx := strings.Index(content, "<")
+			if nextTagIdx == -1 {
+				break
+			}
+			content = content[nextTagIdx:]
 		}
 	}
 
-	// If stack is not empty, there are unmatched opening tags
+	// If stack is not empty, some tags were not closed
 	if len(stack) > 0 {
-		return fmt.Errorf("unmatched opening tag: <%s>", stack[len(stack)-1])
+		return fmt.Errorf("unclosed tag(s): %v", stack)
 	}
 
 	return nil

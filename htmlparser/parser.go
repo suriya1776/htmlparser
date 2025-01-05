@@ -1,10 +1,10 @@
 package htmlparser
 
 import (
+	"encoding/xml"
 	"fmt"
 	"io"
 	"os"
-	"strings"
 )
 
 func Test() {
@@ -25,6 +25,23 @@ func Parse(filelocation string) (string, error) {
 	return content, nil
 }
 
+type HTML struct {
+	XMLName xml.Name `xml:"html"`
+	Lang    string   `xml:"lang,attr"`
+	Head    Head     `xml:"head"`
+	Body    Body     `xml:"body"`
+}
+
+type Head struct {
+	Title string `xml:"title"`
+	Meta  string `xml:"meta"`
+}
+
+type Body struct {
+	Heading string `xml:"h1"`
+	Para    string `xml:"p"`
+}
+
 func parse(filelocation string) (string, error) {
 
 	file, err := os.Open(filelocation)
@@ -38,13 +55,14 @@ func parse(filelocation string) (string, error) {
 		return "", fmt.Errorf("unable to read file: %v", err)
 	}
 
-	// Remove all spaces, tabs, and newlines from the string
-	processedContent := strings.Join(strings.Fields(string(content)), "")
+	var data HTML
 
-	// Validate the HTML structure
-	if err := validateHTML(processedContent); err != nil {
-		return "", fmt.Errorf("invalid HTML: %v", err)
+	err = xml.Unmarshal([]byte(content), &data)
+	if err != nil {
+		panic(err)
 	}
 
-	return processedContent, nil
+	fmt.Println("Title:", data.Lang)
+
+	return "", nil
 }
