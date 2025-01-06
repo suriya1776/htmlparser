@@ -1,10 +1,12 @@
 package htmlparser
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 func Test() {
@@ -33,13 +35,17 @@ type HTML struct {
 }
 
 type Head struct {
+	Meta  []Meta `xml:"meta"`
 	Title string `xml:"title"`
-	Meta  string `xml:"meta"`
+}
+
+type Meta struct {
+	HTTPEquiv string `xml:"http-equiv,attr,omitempty"`
+	Content   string `xml:"content,attr,omitempty"`
+	Name      string `xml:"name,attr,omitempty"`
 }
 
 type Body struct {
-	Heading string `xml:"h1"`
-	Para    string `xml:"p"`
 }
 
 func parse(filelocation string) (string, error) {
@@ -55,6 +61,12 @@ func parse(filelocation string) (string, error) {
 		return "", fmt.Errorf("unable to read file: %v", err)
 	}
 
+	// Preprocess to ensure proper XML self-closing tags
+	contentStr := string(content)
+	contentStr = strings.ReplaceAll(contentStr, "<meta ", "<meta ")
+	contentStr = strings.ReplaceAll(contentStr, ">", " />")
+	content = []byte(contentStr)
+
 	var data HTML
 
 	err = xml.Unmarshal([]byte(content), &data)
@@ -62,7 +74,13 @@ func parse(filelocation string) (string, error) {
 		panic(err)
 	}
 
-	fmt.Println("Title:", data.Lang)
+	jsonOutput, errjson := json.MarshalIndent(data, "", "    ")
+	if errjson != nil {
+		fmt.Println("Error marshalling to JSON:", err)
+		return "", err
+	}
+
+	fmt.Println("json:", string(jsonOutput))
 
 	return "", nil
 }
